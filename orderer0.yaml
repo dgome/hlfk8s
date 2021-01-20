@@ -26,10 +26,30 @@ spec:
           env:
             - name: FABRIC_LOGGING_SPEC
               value: "INFO"
-            - name: FABRIC_CFG_PATH
-              value: "/vol1/configs"
-            - name: ORDERER_GENERAL_SYSTEMCHANNEL
-              value: "system-channel"
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_BOOTSTRAPFILE
+              value: "/vol1/genesis.block"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrderersMSP"
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: "/var/hyperledger/orderer/msp"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: "/var/hyperledger/orderer/tls/server.key"
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: "/var/hyperledger/orderer/tls/signcerts/cert.pem"
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: "[/var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem]"
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+              value: "/var/hyperledger/orderer/tls/server.key"
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+              value: "/var/hyperledger/orderer/tls/signcerts/cert.pem"
+            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+              value: "[/var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem]"
           volumeMounts:
             - mountPath: /vol1
               name: vol1

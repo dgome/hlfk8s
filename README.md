@@ -292,24 +292,6 @@ kubectl exec -n hyperledger deploy/org2-ca -it -- fabric-ca-client enroll --url 
 ## Copy `configtx.yaml`
 
 ```sh
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orgs/orderers/msp/tlscacerts/
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orgs/orderers/msp/cacerts/
-#kubectl cp -n hyperledger config.yaml tools:/myvol/orgs/orderers/msp/
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/orderers/users/orderer0/tls/tlscacerts/tls-localhost-7054.pem /myvol/orgs/orderers/msp/tlscacerts/ca.crt
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/orderers/users/orderer0/msp/cacerts/localhost-7054.pem /myvol/orgs/orderers/msp/cacerts/
-#
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orgs/org1/msp/tlscacerts/
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orgs/org1/msp/cacerts/
-#kubectl cp -n hyperledger config.yaml tools:/myvol/orgs/org1/msp/
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/org1/users/peer0/tls/tlscacerts/tls-localhost-7054.pem /myvol/orgs/org1/msp/tlscacerts/ca.crt
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/org1/users/peer0/msp/cacerts/localhost-7054.pem /myvol/orgs/org1/msp/cacerts/
-#
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orgs/org2/msp/tlscacerts/
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orgs/org2/msp/cacerts/
-#kubectl cp -n hyperledger config.yaml tools:/myvol/orgs/org2/msp/
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/org2/users/peer0/tls/tlscacerts/tls-localhost-7054.pem /myvol/orgs/org2/msp/tlscacerts/ca.crt
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/org2/users/peer0/msp/cacerts/localhost-7054.pem /myvol/orgs/org2/msp/cacerts/
-
 kubectl exec -n hyperledger fabric-tools -it -- mkdir -p /vol1/configs/
 
 kubectl cp configs/configtx.yaml hyperledger/fabric-tools:/vol1/configs/
@@ -319,19 +301,6 @@ kubectl cp configs/configtx.yaml hyperledger/fabric-tools:/vol1/configs/
 
 ```sh
 kubectl exec -n hyperledger fabric-tools -it -- configtxgen -configPath /vol1/configs/ -profile OrdererGenesis -channelID syschannel -outputBlock /vol1/genesis.block
-```
-
-## Copy Orderers Configs
-
-```sh
-kubectl cp configs/orderer.yaml hyperledger/fabric-tools:/vol1/configs/
-
-#kubectl exec -n hyperledger tools -it -- mkdir -p /myvol/orderers/orderer0/config/
-#kubectl cp -n hyperledger config-orderer0.yaml tools:/myvol/orderers/orderer0/config/orderer.yaml
-#kubectl cp -n hyperledger configtx-orderer0.yaml tools:/myvol/orderers/orderer0/config/configtx.yaml
-#kubectl cp -n hyperledger config.yaml tools:/myvol/orgs/orderers/users/orderer0/msp/
-#kubectl cp -n hyperledger config.yaml tools:/myvol/orgs/orderers/msp/
-#kubectl exec -n hyperledger tools -it -- cp /myvol/orgs/orderers/users/orderer0/tls/keystore/* /myvol/orgs/orderers/users/orderer0/tls/private.key
 ```
 
 ## Run Orderers
@@ -345,5 +314,5 @@ kubectl apply -f orderer2.yaml
 ## Create MyChannel
 
 ```sh
-kubectl exec -n hyperledger tools -it -- configtxgen -configPath /myvol -profile MyChannel -outputCreateChannelTx /myvol/channels/mychannel.tx -channelID mychannel
+kubectl exec -n hyperledger fabric-tools -it -- configtxgen -configPath /vol1/configs/ -profile MyChannel -outputCreateChannelTx /vol1/channels/mychannel.tx -channelID mychannel
 ```
