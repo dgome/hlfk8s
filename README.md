@@ -186,6 +186,8 @@ kubectl cp configs/config.yaml hyperledger/fabric-tools:/vol1/organizations/peer
 kubectl exec -n hyperledger deploy/org1-ca -it -- rm -rf /etc/hyperledger/fabric-ca-client/peers/peer0/tls
 
 kubectl exec -n hyperledger deploy/org1-ca -it -- fabric-ca-client enroll --url https://peer0:peer0pw@localhost:7054 --enrollment.profile tls --csr.hosts localhost --csr.hosts peer0-org1 --mspdir /etc/hyperledger/fabric-ca-client/peers/peer0/tls/
+
+kubectl exec -n hyperledger deploy/org1-ca -it -- bash -c 'cp /etc/hyperledger/fabric-ca-client/peers/peer0/tls/keystore/* /etc/hyperledger/fabric-ca-client/peers/peer0/tls/server.key'
 ```
 
 ### Register Peer1
@@ -210,6 +212,8 @@ kubectl cp configs/config.yaml hyperledger/fabric-tools:/vol1/organizations/peer
 kubectl exec -n hyperledger deploy/org1-ca -it -- rm -rf /etc/hyperledger/fabric-ca-client/peers/peer1/tls
 
 kubectl exec -n hyperledger deploy/org1-ca -it -- fabric-ca-client enroll --url https://peer1:peer1pw@localhost:7054 --enrollment.profile tls --csr.hosts localhost --csr.hosts peer1-org1 --mspdir /etc/hyperledger/fabric-ca-client/peers/peer1/tls/
+
+kubectl exec -n hyperledger deploy/org1-ca -it -- bash -c 'cp /etc/hyperledger/fabric-ca-client/peers/peer1/tls/keystore/* /etc/hyperledger/fabric-ca-client/peers/peer1/tls/server.key'
 ```
 
 ## Org2 Registers & Enrolls
@@ -263,6 +267,8 @@ kubectl cp configs/config.yaml hyperledger/fabric-tools:/vol1/organizations/peer
 kubectl exec -n hyperledger deploy/org2-ca -it -- rm -rf /etc/hyperledger/fabric-ca-client/peers/peer0/tls
 
 kubectl exec -n hyperledger deploy/org2-ca -it -- fabric-ca-client enroll --url https://peer0:peer0pw@localhost:7054 --enrollment.profile tls --csr.hosts localhost --csr.hosts peer0-org2 --mspdir /etc/hyperledger/fabric-ca-client/peers/peer0/tls/
+
+kubectl exec -n hyperledger deploy/org2-ca -it -- bash -c 'cp /etc/hyperledger/fabric-ca-client/peers/peer0/tls/keystore/* /etc/hyperledger/fabric-ca-client/peers/peer0/tls/server.key'
 ```
 
 ### Register Peer1
@@ -287,6 +293,8 @@ kubectl cp configs/config.yaml hyperledger/fabric-tools:/vol1/organizations/peer
 kubectl exec -n hyperledger deploy/org2-ca -it -- rm -rf /etc/hyperledger/fabric-ca-client/peers/peer1/tls
 
 kubectl exec -n hyperledger deploy/org2-ca -it -- fabric-ca-client enroll --url https://peer1:peer1pw@localhost:7054 --enrollment.profile tls --csr.hosts localhost --csr.hosts peer1-org2 --mspdir /etc/hyperledger/fabric-ca-client/peers/peer1/tls/
+
+kubectl exec -n hyperledger deploy/org2-ca -it -- bash -c 'cp /etc/hyperledger/fabric-ca-client/peers/peer1/tls/keystore/* /etc/hyperledger/fabric-ca-client/peers/peer1/tls/server.key'
 ```
 
 ## Copy `configtx.yaml`

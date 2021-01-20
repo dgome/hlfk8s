@@ -18,7 +18,7 @@ Organizations:
     ID: Org1MSP
     MSPDir: ../organizations/peerOrganizations/org1/msp
     AnchorPeers:
-      - Host: peer0-org1
+      - Host: org1-peer0
         Port: 7051
     Policies:
       Readers:
@@ -38,7 +38,7 @@ Organizations:
     ID: Org2MSP
     MSPDir: ../organizations/peerOrganizations/org2/msp
     AnchorPeers:
-      - Host: peer0-org2
+      - Host: org2-peer0
         Port: 7051
     Policies:
       Readers:

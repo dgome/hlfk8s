@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hyperledger
+  name: org2-peer0
+  labels:
+    app: org2-peer0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: org2-peer0
+  template:
+    metadata:
+      labels:
+        app: org2-peer0
+    spec:
+      volumes:
+        - name: vol1
+          persistentVolumeClaim:
+            claimName: pvc1
+        - name: host
+          hostPath:
+            path: /var/run
+      containers:
+        - name: org2-peer0
+          image: hyperledger/fabric-peer:2.2.1
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          command: [ "peer" ]
+          args: [ "node","start" ]
+          env:
+            - name: FABRIC_LOGGING_SPEC
+              value: "INFO"
+            - name: CORE_VM_ENDPOINT
+              value: "unix:///var/run/docker.sock"
+            - name: CORE_PEER_ADDRESSAUTODETECT
+              value: "true"
+            - name: CORE_VM_DOCKER_ATTACHOUT
+              value: "true"
+            - name: CORE_PEER_ID
+              value: "org2-peer0"
+            - name: CORE_PEER_LISTENADDRESS
+              value: "0.0.0.0:7051"
+            - name: CORE_PEER_GOSSIP_BOOTSTRAP
+              value: "org2-peer0:7051"
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: "org2-peer0:7051"
+            - name: CORE_PEER_GOSSIP_ENDPOINT
+              value: "org2-peer0:7051"
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: "0.0.0.0:7052"
+            - name: CORE_PEER_LOCALMSPID
+              value: "org2MSP"
+            - name: CORE_PEER_ENDORSER_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: "/etc/hyperledger/fabric/tls/signcerts/cert.pem"
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: "/etc/hyperledger/fabric/tls/server.key"
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: "/etc/hyperledger/fabric/tls/tlscacerts/tls-localhost-7054.pem"
+          volumeMounts:
+            - mountPath: /var/run
+              name: host
+            - mountPath: /etc/hyperledger/fabric/msp
+              name: vol1
+              subPath: organizations/peerOrganizations/org2/peers/peer0/msp
+            - mountPath: /etc/hyperledger/fabric/tls
+              name: vol1
+              subPath: organizations/peerOrganizations/org2/peers/peer0/tls
+            - mountPath: /etc/hyperledger/orderers
+              name: vol1
+              subPath: organizations/ordererOrganizations/orderers
+            - mountPath: /var/hyperledger/production
+              name: vol1
+              subPath: peers/org2-peer0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hyperledger
+  name: org2-peer0
+spec:
+  type: ClusterIP
+  selector:
+    app: org2-peer0
+  ports:
+    - port: 7051
+      targetPort: 7051
