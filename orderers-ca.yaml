@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hyperledger
+  name: orderers-ca
+  labels:
+    app: orderers-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderers-ca
+  template:
+    metadata:
+      labels:
+        app: orderers-ca
+    spec:
+      volumes:
+        - name: vol1
+          persistentVolumeClaim:
+            claimName: pvc1
+      containers:
+        - name: orderers-ca
+          image: hyperledger/fabric-ca:1.4.7
+          env:
+            - name: FABRIC_CA_SERVER_HOME
+              value: "/etc/hyperledger/fabric-ca-server"
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: "orderers-ca"
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "true"
+            - name: FABRIC_CA_CLIENT_HOME
+              value: "/etc/hyperledger/fabric-ca-client"
+            - name: FABRIC_CA_CLIENT_TLS_CERTFILES
+              value: "/etc/hyperledger/fabric-ca-server/tls-cert.pem"
+          volumeMounts:
+            - mountPath: /etc/hyperledger/fabric-ca-server
+              name: vol1
+              subPath: organizations/fabric-ca/orderers
+            - mountPath: /etc/hyperledger/fabric-ca-client
+              name: vol1
+              subPath: organizations/ordererOrganizations/orderers
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hyperledger
+  name: orderers-ca
+spec:
+  type: ClusterIP
+  selector:
+    app: orderers-ca
+  ports:
+    - port: 7054
+      targetPort: 7054

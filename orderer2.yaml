@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hyperledger
+  name: orderer2
+  labels:
+    app: orderer2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer2
+  template:
+    metadata:
+      labels:
+        app: orderer2
+    spec:
+      volumes:
+        - name: vol1
+          persistentVolumeClaim:
+            claimName: pvc1
+      containers:
+        - name: orderer2
+          image: hyperledger/fabric-orderer:2.2.1
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+          env:
+            - name: FABRIC_LOGGING_SPEC
+              value: "INFO"
+            - name: FABRIC_CFG_PATH
+              value: "/vol1/configs"
+            - name: ORDERER_GENERAL_SYSTEMCHANNEL
+              value: "system-channel"
+          volumeMounts:
+            - mountPath: /vol1
+              name: vol1
+            - mountPath: /var/hyperledger/orderer/
+              name: vol1
+              subPath: organizations/ordererOrganizations/orderers/orderers/orderer2/
+            - mountPath: /var/hyperledger/production/orderer/
+              name: vol1
+              subPath: orderers/orderer2/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hyperledger
+  name: orderer2
+spec:
+  type: ClusterIP
+  selector:
+    app: orderer2
+  ports:
+    - port: 7050
+      targetPort: 7050

@@ -1,0 +1,21 @@
+General:
+  ListenAddress: 0.0.0.0
+  ListenPort: 7050
+  BootstrapMethod: file
+  BootstrapFile: /vol1/genesis.block
+  LocalMSPID: OrderersMSP
+  LocalMSPDir: /var/hyperledger/orderer/msp
+  TLS:
+    Enabled: true
+    PrivateKey: /var/hyperledger/orderer/tls/server.key
+    Certificate: /var/hyperledger/orderer/tls/signcerts/cert.pem
+    ClientAuthRequired: true
+    RootCAs:
+      - /var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem
+    ClientRootCAs:
+      - /var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem
+  Cluster:
+    ClientPrivateKey: /var/hyperledger/orderer/tls/server.key
+    ClientCertificate: /var/hyperledger/orderer/tls/signcerts/cert.pem
+    RootCAs:
+      - /var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem

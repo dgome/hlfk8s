@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: hyperledger
+  name: fabric-tools
+spec:
+  volumes:
+    - name: vol1
+      persistentVolumeClaim:
+        claimName: pvc1
+  containers:
+    - name: fabric-tools
+      image: hyperledger/fabric-tools:2.2.1
+      command:
+        - sleep
+      args:
+        - infinity
+      volumeMounts:
+        - mountPath: /vol1
+          name: vol1

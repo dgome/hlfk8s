@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hyperledger
+  name: org1-ca
+  labels:
+    app: org1-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: org1-ca
+  template:
+    metadata:
+      labels:
+        app: org1-ca
+    spec:
+      volumes:
+        - name: vol1
+          persistentVolumeClaim:
+            claimName: pvc1
+      containers:
+        - name: org1-ca
+          image: hyperledger/fabric-ca:1.4.7
+          env:
+            - name: FABRIC_CA_SERVER_HOME
+              value: "/etc/hyperledger/fabric-ca-server"
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: "org1-ca"
+            - name: FABRIC_CA_SERVER_TLS_ENABLED
+              value: "true"
+            - name: FABRIC_CA_CLIENT_HOME
+              value: "/etc/hyperledger/fabric-ca-client"
+            - name: FABRIC_CA_CLIENT_TLS_CERTFILES
+              value: "/etc/hyperledger/fabric-ca-server/tls-cert.pem"
+          volumeMounts:
+            - mountPath: /etc/hyperledger/fabric-ca-server
+              name: vol1
+              subPath: organizations/fabric-ca/org1
+            - mountPath: /etc/hyperledger/fabric-ca-client
+              name: vol1
+              subPath: organizations/peerOrganizations/org1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hyperledger
+  name: org1-ca
+spec:
+  type: ClusterIP
+  selector:
+    app: org1-ca
+  ports:
+    - port: 7054
+      targetPort: 7054
