@@ -442,3 +442,183 @@ export CORE_PEER_ADDRESS=org2-peer0:7051; \
 export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
 peer channel update --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --channelID mychannel --file /vol1/channel-artifacts/Org2-Anchors.tx --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem'
 ```
+
+## Install Chain Code
+
+### Copy
+
+```sh
+kubectl -n hyperledger exec fabric-tools -it -- rm -rf /vol1/chaincode0
+kubectl cp chaincode0 hyperledger/fabric-tools:/vol1/chaincode0
+```
+
+### Vendor
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c 'pushd /vol1/chaincode0; GO111MODULE=on go mod vendor'
+```
+
+### Package
+
+```sh
+kubectl -n hyperledger exec fabric-tools -it -- rm -f /vol1/chaincode0.tar.gz
+kubectl exec -n hyperledger fabric-tools -it -- peer lifecycle chaincode package /vol1/chaincode0.tar.gz --path /vol1/chaincode0 --lang golang --label cc0_v1
+```
+
+### Install
+
+#### Org1
+
+##### Peer0
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer lifecycle chaincode install /vol1/chaincode0.tar.gz'
+```
+
+##### Peer1
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer1:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer1/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer1/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer1/tls/server.key; \
+peer lifecycle chaincode install /vol1/chaincode0.tar.gz'
+```
+
+#### Org2
+
+##### Peer0
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org2MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org2/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org2-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/server.key; \
+peer lifecycle chaincode install /vol1/chaincode0.tar.gz'
+```
+
+##### Peer1
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org2MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org2/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org2-peer1:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer1/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer1/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer1/tls/server.key; \
+peer lifecycle chaincode install /vol1/chaincode0.tar.gz'
+```
+
+#### Query Installed Chain Codes
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer lifecycle chaincode queryinstalled'
+```
+
+### Approve
+
+#### Org1 by Peer0
+
+_TODO: Auto Get Package ID_
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer lifecycle chaincode approveformyorg --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --version 1 --init-required --package-id cc0_v1:90c598130fc773cc579287d52e62fbaee0b2ffe53874d19a244b6bbb98f32fad --sequence 1'
+```
+
+#### Org2 by Peer0
+
+_TODO: Auto Get Package ID_
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org2MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org2/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org2-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/server.key; \
+peer lifecycle chaincode approveformyorg --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --version 1 --init-required --package-id cc0_v1:90c598130fc773cc579287d52e62fbaee0b2ffe53874d19a244b6bbb98f32fad --sequence 1'
+```
+
+### Commit Chaincode Definition
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- peer lifecycle chaincode commit --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --peerAddresses org1-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --peerAddresses org2-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --version 1 --sequence 1 --init-required
+```
+
+### Invoke Init
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer chaincode invoke --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --peerAddresses org1-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --peerAddresses org2-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --isInit --ctor "{\"function\":\"InitLedger\",\"Args\":[]}"'
+```
+
+## Invoke Chain Code
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer chaincode invoke --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --peerAddresses org1-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --peerAddresses org2-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --ctor "{\"Args\":[\"CreateItem\", \"1\", \"Item 1\"]}"'
+```
+
+## Query Chain Code
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer chaincode query --channelID mychannel --name cc0 --ctor "{\"Args\":[\"GetItem\", \"1\"]}"'
+```
