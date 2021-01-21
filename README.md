@@ -375,8 +375,8 @@ kubectl exec -n hyperledger fabric-tools -it -- bash -c 'export CORE_PEER_LOCALM
 kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
 export CORE_PEER_LOCALMSPID="Org1MSP"; \
 export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
-export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
 peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
 ```
@@ -387,8 +387,8 @@ peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
 kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
 export CORE_PEER_LOCALMSPID="Org1MSP"; \
 export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
-export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_ADDRESS=org1-peer1:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer1/tls/tlscacerts/tls-localhost-7054.pem; \
 peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
 ```
@@ -401,8 +401,8 @@ peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
 kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
 export CORE_PEER_LOCALMSPID="Org2MSP"; \
 export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org2/users/admin1/msp; \
-export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_ADDRESS=org2-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
 peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
 ```
@@ -413,8 +413,32 @@ peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
 kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
 export CORE_PEER_LOCALMSPID="Org2MSP"; \
 export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org2/users/admin1/msp; \
-export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_ADDRESS=org2-peer1:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
 export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer1/tls/tlscacerts/tls-localhost-7054.pem; \
 peer channel join --blockpath /vol1/channel-artifacts/mychannel.block'
+```
+
+## Update Anchor Peers
+
+### Org1
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+peer channel update --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --channelID mychannel --file /vol1/channel-artifacts/Org1-Anchors.tx --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem'
+```
+
+### Org2
+
+```sh
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org2MSP"
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org2/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org2-peer0:7051; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+peer channel update --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --channelID mychannel --file /vol1/channel-artifacts/Org2-Anchors.tx --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem'
 ```
