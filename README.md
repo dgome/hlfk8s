@@ -5,7 +5,15 @@ _Under Development_
 ## Create Namespace
 
 ```sh
+kubectl delete -f namespace.yaml
+
 kubectl apply -f namespace.yaml
+```
+
+## Create Volume
+
+```sh
+kubectl apply -f pv1.yaml
 ```
 
 ## Create Persistent Volume Claim
@@ -578,7 +586,15 @@ peer lifecycle chaincode approveformyorg --orderer orderer0:7050 --ordererTLSHos
 ### Commit Chaincode Definition
 
 ```sh
-kubectl exec -n hyperledger fabric-tools -it -- peer lifecycle chaincode commit --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --peerAddresses org1-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --peerAddresses org2-peer0:7051 --tlsRootCertFiles /vol1/organizations/peerOrganizations/org2/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem --version 1 --sequence 1 --init-required
+kubectl exec -n hyperledger fabric-tools -it -- bash -c '\
+export CORE_PEER_LOCALMSPID="Org1MSP"; \
+export CORE_PEER_MSPCONFIGPATH=/vol1/organizations/peerOrganizations/org1/users/admin1/msp; \
+export CORE_PEER_ADDRESS=org1-peer0:7051; \
+export CORE_PEER_TLS_ENABLED=true; \
+export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem; \
+export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
+export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
+peer lifecycle chaincode commit --orderer orderer0:7050 --ordererTLSHostnameOverride orderer0 --tls true --cafile /vol1/organizations/ordererOrganizations/orderers/msp/tlscacerts/tls-localhost-7054.pem --channelID mychannel --name cc0 --version 1 --sequence 1 --init-required'
 ```
 
 ### Invoke Init

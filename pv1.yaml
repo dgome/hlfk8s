@@ -1,0 +1,17 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv1
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /tmp/hyperledger/pv1
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Delete
+  volumeMode: Filesystem
+  claimRef:
+    namespace: hyperledger
+    name: pvc1
