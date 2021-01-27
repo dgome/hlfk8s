@@ -1,0 +1,71 @@
+{
+  "name": "network1",
+  "version": "1.0.0",
+  "client": {
+    "tlsEnable": true,
+    "adminCredential": {
+      "id": "exploreradmin",
+      "password": "exploreradminpw",
+      "affiliation": "org1.department1"
+    },
+    "caCredential": {
+      "id": "admin",
+      "password": "adminpw"
+    },
+    "enableAuthentication": true,
+    "organization": "Org1MSP",
+    "connection": {
+      "timeout": {
+        "peer": {
+          "endorser": "300"
+        },
+        "orderer": "300"
+      }
+    }
+  },
+  "channels": {
+    "mychannel": {
+      "peers": {
+        "org1-peer0": {}
+      },
+      "connection": {
+        "timeout": {
+          "peer": {
+            "endorser": "6000",
+            "eventHub": "6000",
+            "eventReg": "6000"
+          }
+        }
+      }
+    }
+  },
+  "organizations": {
+    "Org1MSP": {
+      "mspid": "Org1MSP",
+      "peers": [
+        "org1-peer0"
+      ],
+      "certificateAuthorities": ["org1-ca"]
+    }
+  },
+  "peers": {
+    "org1-peer0": {
+      "tlsCACerts": {
+        "path": "/tmp/crypto/peerOrganizations/org1/peers/peer0/tls/tlscacerts/tls-localhost-7054.pem"
+      },
+      "url": "grpcs://org1-peer0:7051"
+    }
+  },
+  "certificateAuthorities": {
+    "org1-ca": {
+      "url": "https://org1-ca:7054",
+      "httpOptions": {
+        "verify": false
+      },
+      "tlsCACerts": {
+        "path": "/tmp/crypto/peerOrganizations/fabric-ca/org1/tls-cert.pem"
+      },
+      "caName": "org1-ca"
+    }
+  }
+}

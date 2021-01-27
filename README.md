@@ -174,6 +174,8 @@ kubectl exec -n hyperledger deploy/org1-ca -it -- rm -rf /etc/hyperledger/fabric
 kubectl exec -n hyperledger deploy/org1-ca -it -- fabric-ca-client enroll --url https://admin1:admin1pw@localhost:7054 --mspdir /etc/hyperledger/fabric-ca-client/users/admin1/msp/
 
 kubectl cp config/config.yaml hyperledger/fabric-tools:/vol1/organizations/peerOrganizations/org1/users/admin1/msp/
+
+kubectl exec -n hyperledger deploy/org1-ca -it -- bash -c 'cp /etc/hyperledger/fabric-ca-client/users/admin1/msp/keystore/* /etc/hyperledger/fabric-ca-client/users/admin1/msp/private.key'
 ```
 
 ### Register Peer0
@@ -637,4 +639,36 @@ export CORE_PEER_TLS_ROOTCERT_FILE=/vol1/organizations/peerOrganizations/org1/pe
 export CORE_PEER_TLS_CERT_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/signcerts/cert.pem; \
 export CORE_PEER_TLS_KEY_FILE=/vol1/organizations/peerOrganizations/org1/peers/peer0/tls/server.key; \
 peer chaincode query --channelID mychannel --name cc0 --ctor "{\"Args\":[\"GetItem\", \"1\"]}"'
+```
+
+## Run Hyperledger Explorer
+
+### Run Database
+
+```sh
+kubectl apply -f explorer-db.yaml
+```
+
+### Register Hyperledger Explorer Admin
+
+```sh
+kubectl exec -n hyperledger deploy/org1-ca -it -- fabric-ca-client register --id.name exploreradmin --id.secret exploreradminpw --id.type admin --url https://admin:adminpw@localhost:7054
+```
+
+### Copy Config
+
+```sh
+kubectl cp explorer hyperledger/fabric-tools:/vol1/
+```
+
+### Run Hyperledger Explorer
+
+```sh
+kubectl apply -f explorer.yaml
+```
+
+## Visit Hyperledger Explorer Dashboard
+
+```sh
+kubectl -n hyperledger port-forward service/explorer 8080:8080
 ```
